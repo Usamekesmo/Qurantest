@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>اختبار القرآن الكريم</title>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Tajawal:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: linear-gradient(135deg, #fffde7, #e8f5e9);
+      text-align: center;
+      direction: rtl;
+      padding: 20px;
+      color: #2e7d32;
+    }
+    .quiz-box {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      padding: 30px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 2px solid #a5d6a7;
+      font-family: 'Tajawal', sans-serif;
+    }
+    button.option-btn {
+      display: block;
+      background-color: white;
+      border: 2px solid #2196F3;
+      color: #2196F3;
+      font-weight: bold;
+      transition: 0.3s ease;
+      margin: 10px 0;
+    }
+    button.option-btn:hover {
+      background-color: #e3f2fd;
+    }
+    .correct {
+      background-color: #c8e6c9 !important;
+      border-color: #2e7d32;
+      color: #2e7d32;
+    }
+    .wrong {
+      background-color: #ffcdd2 !important;
+      border-color: #c62828;
+      color: #c62828;
+    }
+    #currentAyah {
+      font-family: 'Amiri', serif;
+      font-size: 24px;
+      margin-bottom: 20px;
+      background: #f1f8e9;
+      padding: 20px;
+      border-radius: 12px;
+    }
+    .answer-feedback {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    #timer {
+      font-weight: bold;
+      color: #d32f2f;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-box" id="startScreen">
+    <h2>ابدأ اختبارك</h2>
+    <input type="text" id="username" placeholder="اسم المستخدم" />
+    <select id="mode">
+      <option value="">-- اختر نوع الاختبار --</option>
+      <option value="complete">أكمل الآية</option>
+      <option value="next">ما هي الآية التالية؟</option>
+      <option value="mixed">اختبار مختلط</option>
+    </select>
+    <select id="surahSelector">
+      <option value="">-- اختر السورة --</option>
+    </select>
+    <button onclick="startQuiz()">ابدأ الاختبار</button>
+  </div>
+
+  <div class="quiz-box" id="quizBox" style="display: none;">
+    <div id="timer">الوقت المتبقي: 12:00</div>
+    <div id="question-number"></div>
+    <div id="currentAyah">جاري التحميل...</div>
+
+    <div id="completeMode" style="display: none;">
+      <input type="text" id="userAnswer" placeholder="أكمل الآية..." />
+    </div>
+    <div id="nextMode" style="display: none;">
+      <div id="choices"></div>
+    </div>
+
+    <p class="answer-feedback" id="feedback"></p>
+    <button id="nextBtn" onclick="nextQuestion()">التالي</button>
+  </div>
+
+  <div class="quiz-box" id="resultBox" style="display: none;">
+    <h2>تم الانتهاء!</h2>
+    <p id="finalResult"></p>
+  </div>
+
+  <script>
+    const sheetURLs = {
+      complete: "https://opensheet.elk.sh/1rS_zbNym5lMUVRM1Wgoc3KV5Ua7SQ92lfj5rPz5zsKg/complete",
+      next: "https://opensheet.elk.sh/1rS_zbNym5lMUVRM1Wgoc3KV5Ua7SQ92lfj5rPz5zsKg/next"
+    };
+
+    const surahOrder = [
+  "الفاتحة", "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال", "التوبة", "يونس",
+  "هود", "يوسف", "الرعد", "إبراهيم", "الحجر", "النحل", "الإسراء", "الكهف", "مريم", "طه",
+  "الأنبياء", "الحج", "المؤمنون", "النور", "الفرقان", "الشعراء", "النمل", "القصص", "العنكبوت", "الروم",
+  "لقمان", "السجدة", "الأحزاب", "سبأ", "فاطر", "يس", "الصافات", "ص", "الزمر", "غافر",
+  "فصلت", "الشورى", "الزخرف", "الدخان", "الجاثية", "الأحقاف", "محمد", "الفتح", "الحجرات", "ق",
+  "الذاريات", "الطور", "النجم", "القمر", "الرحمن", "الواقعة", "الحديد", "المجادلة", "الحشر", "الممتحنة",
+  "الصف", "الجمعة", "المنافقون", "التغابن", "الطلاق", "التحريم", "الملك", "القلم", "الحاقة", "المعارج",
+  "نوح", "الجن", "المزمل", "المدثر", "القيامة", "الإنسان", "المرسلات", "النبأ", "النازعات", "عبس",
+  "التكوير", "الانفطار", "المطففين", "الانشقاق", "البروج", "الطارق", "الأعلى", "الغاشية", "الفجر", "البلد",
+  "الشمس", "الليل", "الضحى", "الشرح", "التين", "العلق", "القدر", "البينة", "الزلزلة", "العاديات",
+  "القارعة", "التكاثر", "العصر", "الهمزة", "الفيل", "قريش", "الماعون", "الكوثر", "الكافرون", "النصر",
+  "المسد", "الإخلاص", "الفلق", "الناس"
+];
+ // (نفس مصفوفة السور)
+
+    let questions = [], currentIndex = 0, score = 0, mode = "", username = "";
+    let timer, timeLeft = 720; // 12 دقيقة
+
+    function shuffleArray(arr) {
+      return arr.sort(() => Math.random() - 0.5);
+    }
+
+    function loadSurahs() {
+      fetch(sheetURLs.complete).then(res => res.json()).then(data => {
+        const unique = [...new Set(data.map(q => q.surah?.trim()))];
+        const select = document.getElementById("surahSelector");
+        const allOption = document.createElement("option");
+        allOption.value = "__all__";
+        allOption.textContent = "كل السور";
+        select.appendChild(allOption);
+        surahOrder.forEach(surah => {
+          if (unique.includes(surah)) {
+            const opt = document.createElement("option");
+            opt.value = surah; opt.textContent = surah;
+            select.appendChild(opt);
+          }
+        });
+      });
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        timeLeft--;
+        const min = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        const sec = (timeLeft % 60).toString().padStart(2, '0');
+        document.getElementById("timer").innerText = `الوقت المتبقي: ${min}:${sec}`;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          endQuiz();
+        }
+      }, 1000);
+    }
+
+    function startQuiz() {
+      username = document.getElementById("username").value.trim();
+      mode = document.getElementById("mode").value;
+      const surah = document.getElementById("surahSelector").value;
+
+      if (!username || !mode || !surah) return alert("يرجى تعبئة كل الحقول");
+
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("quizBox").style.display = "block";
+
+      let sources = [];
+      if (mode === "complete") sources.push({url: sheetURLs.complete, type: "complete"});
+      else if (mode === "next") sources.push({url: sheetURLs.next, type: "next"});
+      else sources = [
+        {url: sheetURLs.complete, type: "complete"},
+        {url: sheetURLs.next, type: "next"}
+      ];
+
+      Promise.all(sources.map(s =>
+        fetch(s.url).then(res => res.json())
+        .then(data => data.map(q => ({...q, qType: s.type})))
+      )).then(results => {
+        let combined = [].concat(...results);
+        if (surah !== "__all__") {
+          combined = combined.filter(q => q.surah?.trim() === surah.trim());
+        }
+        questions = shuffleArray(combined).slice(0, 20);
+        currentIndex = 0;
+        score = 0;
+        showQuestion();
+        startTimer();
+      });
+    }
+
+    function showQuestion() {
+      const q = questions[currentIndex];
+      document.getElementById("feedback").innerText = "";
+      document.getElementById("question-number").innerText = `السؤال ${currentIndex + 1} من ${questions.length}`;
+
+      if (q.qType === "complete") {
+        document.getElementById("completeMode").style.display = "block";
+        document.getElementById("nextMode").style.display = "none";
+        document.getElementById("userAnswer").value = "";
+        document.getElementById("currentAyah").innerText = q.ayacomplete + " ...";
+        document.getElementById("nextBtn").disabled = false;
+      } else {
+        document.getElementById("completeMode").style.display = "none";
+        document.getElementById("nextMode").style.display = "block";
+        document.getElementById("currentAyah").innerText = q.ayanext;
+
+        const choices = [q.option1, q.option2, q.option3, q.option4];
+        const correctIndex = parseInt(q["correct option number"]) - 1;
+        const correct = choices[correctIndex];
+        const shuffled = shuffleArray(choices);
+
+        const choiceDiv = document.getElementById("choices");
+        choiceDiv.innerHTML = "";
+        shuffled.forEach(ch => {
+          const btn = document.createElement("button");
+          btn.className = "option-btn";
+          btn.innerText = ch;
+          btn.onclick = () => {
+  if (ch === correct) {
+    btn.classList.add("correct");
+    score += 5;
+    document.getElementById("feedback").innerText = "✅ صحيح!";
+  } else {
+    btn.classList.add("wrong");
+    document.getElementById("feedback").innerText = `❌ الصحيح: ${correct}`;
+  }
+  document.querySelectorAll(".option-btn").forEach(b => b.disabled = true);
+  document.getElementById("nextBtn").disabled = false; // تفعيل زر "التالي" بعد الإجابة
+};
+
+          choiceDiv.appendChild(btn);
+        });
+      }
+    }
+
+    let feedbackShown = false;
+
+function nextQuestion() {
+  const q = questions[currentIndex];
+
+  // إذا لم تُعرض التغذية الراجعة بعد، تحقق وأعرضها فقط
+  if (!feedbackShown) {
+    if (q.qType === "complete") {
+      const userAns = document.getElementById("userAnswer").value.trim();
+      const correct = q.correct.trim();
+      if (userAns === correct) {
+        score += 5;
+        document.getElementById("feedback").innerText = "✅ صحيح!";
+      } else {
+        document.getElementById("feedback").innerText = `❌ الصحيح: ${correct}`;
+      }
+    }
+    // الآن عُرضت التغذية الراجعة، لا تنتقل للسؤال التالي بعد
+    feedbackShown = true;
+    return;
+  }
+
+  // إذا عُرضت التغذية الراجعة، انتقل للسؤال التالي
+  currentIndex++;
+  feedbackShown = false;
+  if (currentIndex < questions.length) {
+    showQuestion();
+  } else {
+    endQuiz();
+  }
+}
+
+
+    function endQuiz() {
+      clearInterval(timer);
+      document.getElementById("quizBox").style.display = "none";
+      document.getElementById("resultBox").style.display = "block";
+      document.getElementById("finalResult").innerText = `${username}، نتيجتك: ${score} من ${questions.length * 5}`;
+      saveResult();
+    }
+
+    function saveResult() {
+  const result = {
+    username: username,
+    score: score,
+    time: new Date().toLocaleString(),
+    mode: mode,  // نوع الاختبار
+    answers: [], // إجابات المستخدم وتصحيحاتها
+  };
+
+  // إضافة إجابات وتصحيحات كل سؤال
+  questions.forEach((q, index) => {
+    let userAnswer = '';
+    let correctAnswer = '';
+    let userAnswerCorrect = false;
+
+    if (q.qType === "complete") {
+      userAnswer = document.getElementById("userAnswer").value.trim();
+      correctAnswer = q.correct.trim();
+      userAnswerCorrect = (userAnswer === correctAnswer);
+    } else {
+      const selectedChoice = document.querySelector(".option-btn.correct"); // العثور على الإجابة الصحيحة
+      if (selectedChoice) {
+        userAnswer = selectedChoice.innerText;
+        correctAnswer = q.correct;
+        userAnswerCorrect = (userAnswer === correctAnswer);
+      }
+    }
+
+    result.answers.push({
+      question: q.text || q.ayacomplete || q.ayanext,  // نص السؤال
+      userAnswer: userAnswer,  // إجابة المستخدم
+      correctAnswer: correctAnswer,  // الإجابة الصحيحة
+      correct: userAnswerCorrect,  // هل الإجابة صحيحة؟
+    });
+  });
+
+  // إرسال البيانات إلى رابط Google Sheets
+  fetch("https://sheet.best/api/sheets/2fb79a9a-4f21-483d-9446-3f0dc5fe9c7c/tabs/result", {
+    method: "POST",
+    body: JSON.stringify(result),
+    headers: {"Content-Type": "application/json"}
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log("تم حفظ النتيجة بنجاح:", data);
+  })
+  .catch(error => {
+    console.error("حدث خطأ أثناء حفظ النتيجة:", error);
+  });
+}
+
+
+    loadSurahs();
+  </script>
+</body>
+</html>
