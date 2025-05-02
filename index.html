@@ -318,10 +318,28 @@
   height: 24px;
   margin-left: 10px;
 }
+
+/* أنماط العداد */
+.counter-box {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.counter-value {
+  font-weight: bold;
+  color: #2e7d32;
+  font-size: 18px;
+}
   </style>
 </head>
 <body>
   <div class="quiz-box" id="startForm">
+    <div class="counter-box">
+      عدد المستخدمين الذين قاموا بالاختبار: <span class="counter-value" id="userCounter">0</span>
+    </div>
     <h2>ابدأ اختبارك</h2>
     <input type="text" id="username" placeholder="اسم المستخدم" required />
     <input type="number" id="questionCount" placeholder="عدد الأسئلة (حد أقصى 25)" min="1" max="25" value="" required />
@@ -378,7 +396,8 @@
       next: "https://opensheet.elk.sh/1opUbpiRngFk8tJVqt-jffAkr27kI9CwpAdd7QnOFsK4/next",
       order: "https://opensheet.elk.sh/1opUbpiRngFk8tJVqt-jffAkr27kI9CwpAdd7QnOFsK4/order",
       results: 'https://sheet.best/api/sheets/2fb79a9a-4f21-483d-9446-3f0dc5fe9c7c/tabs/result',
-      corrections: 'https://sheet.best/api/sheets/2fb79a9a-4f21-483d-9446-3f0dc5fe9c7c/tabs/corrections'
+      corrections: 'https://sheet.best/api/sheets/2fb79a9a-4f21-483d-9446-3f0dc5fe9c7c/tabs/corrections',
+      counter: 'https://sheet.best/api/sheets/2fb79a9a-4f21-483d-9446-3f0dc5fe9c7c/tabs/counter'
     };
 
     // الثوابت
@@ -401,6 +420,7 @@
     let corrections = [];
     let draggedItem = null;
     let correctOrder = [];
+    let userCounter = 0;
 
     const surahOrder = [
       "الفاتحة", "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال", "التوبة", "يونس",
@@ -418,6 +438,42 @@
 
     function shuffleArray(array) {
       return array.sort(() => Math.random() - 0.5);
+    }
+
+    // دالة لزيادة العداد
+    function incrementCounter() {
+      userCounter++;
+      document.getElementById('userCounter').textContent = userCounter;
+      
+      // تخزين العداد في غوغل شيت
+      fetch(sheetURLs.counter, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          count: userCounter,
+          timestamp: new Date().toLocaleString()
+        })
+      })
+      .then(response => response.json())
+      .then(data => console.log('Counter updated:', data))
+      .catch(error => console.error('Error updating counter:', error));
+    }
+
+    // دالة لجلب قيمة العداد من غوغل شيت
+    function fetchCounter() {
+      fetch(sheetURLs.counter)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.length > 0) {
+            // نأخذ آخر قيمة مدخلة
+            const lastEntry = data[data.length - 1];
+            userCounter = parseInt(lastEntry.count) || 0;
+            document.getElementById('userCounter').textContent = userCounter;
+          }
+        })
+        .catch(error => console.error('Error fetching counter:', error));
     }
 
     function startTimer() {
@@ -505,6 +561,11 @@
       
       document.getElementById("quizBox").innerHTML = resultHTML;
       storeResultInSheet();
+      
+      // تخزين التصحيحات في غوغل شيت
+      corrections.forEach(correction => {
+        storeCorrection(correction.question, correction.userAnswer, correction.correctAnswer);
+      });
     }
 
     function getModeName(mode) {
@@ -550,6 +611,9 @@
         alert("يرجى إدخال جميع البيانات المطلوبة");
         return;
       }
+
+      // زيادة العداد عند بدء الاختبار
+      incrementCounter();
 
       currentIndex = 0;
       score = 0;
@@ -930,7 +994,7 @@
         },
         body: JSON.stringify(correctionData)
       })
-            .then(response => response.json())
+      .then(response => response.json())
       .then(data => console.log('Correction stored:', data))
       .catch(error => console.error('Error storing correction:', error));
     }
@@ -967,6 +1031,7 @@
     // تحميل السور عند بدء التحميل
     window.onload = function() {
       loadSurahs();
+      fetchCounter(); // جلب قيمة العداد عند التحميل
       
       // إعداد أحداث السحب والإفلات لأسئلة الترتيب
       document.addEventListener('dragover', function(e) {
