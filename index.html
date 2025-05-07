@@ -510,6 +510,46 @@
       showFinalResults();
     }
 
+    async function sendCorrectionsToTelegram() {
+      if (corrections.length === 0) return;
+      
+      let message = `📝 تقرير التصحيحات (${new Date().toLocaleString()})\n\n`;
+      message += `📖 نوع الاختبار: ${getModeName(mode)}\n`;
+      if (selectedSurah && selectedSurah !== "__all__") {
+        message += `📜 السورة: ${selectedSurah}\n`;
+      }
+      message += `❌ عدد الأخطاء: ${corrections.length}\n\n`;
+      
+      corrections.forEach((correction, index) => {
+        message += `🔹 السؤال: ${correction.question}\n`;
+        message += `✖ إجابة خاطئة: ${correction.userAnswer}\n`;
+        message += `✔ الإجابة الصحيحة: ${correction.correctAnswer}\n\n`;
+      });
+      
+      // إرسال الرسالة إلى بوت التليجرام
+      const botToken = '6671455687:AAHemRdgQbmodCsqeIaha55qfPml_h9cjVQ'; // استبدل هذا ب token البوت الخاص بك
+      const chatId = '@qurantest2'; // أو معرف القناة
+      
+      try {
+        const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: 'HTML'
+          })
+        });
+        
+        const data = await response.json();
+        console.log('Message sent to Telegram:', data);
+      } catch (error) {
+        console.error('Error sending to Telegram:', error);
+      }
+    }
+
     function showFinalResults() {
       const percentage = Math.round((score / questions.length) * 100);
       const roundedScore = Math.round((TOTAL_SCORE / questions.length) * score);
@@ -523,6 +563,11 @@
         resultMessage = "حاول مراجعة الأخطاء";
       } else {
         resultMessage = "يحتاج إلى مزيد من المراجعة";
+      }
+      
+      // إرسال التصحيحات إلى التليجرام
+      if (corrections.length > 0) {
+        sendCorrectionsToTelegram();
       }
       
       const resultHTML = `
