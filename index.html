@@ -423,20 +423,6 @@
     function shuffleArray(array) {
       return array.sort(() => Math.random() - 0.5);
     }
-    // دالة لجلب قيمة العداد من غوغل شيت
-    function fetchCounter() {
-      fetch(sheetURLs.counter)
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.length > 0) {
-            // نأخذ آخر قيمة مدخلة
-            const lastEntry = data[data.length - 1];
-            userCounter = parseInt(lastEntry.count) || 0;
-            document.getElementById('userCounter').textContent = userCounter;
-          }
-        })
-        .catch(error => console.error('Error fetching counter:', error));
-    }
 
     function startTimer() {
       updateTimerDisplay();
@@ -1038,7 +1024,6 @@
     // تحميل السور عند بدء التحميل
     window.onload = function() {
       loadSurahs();
-      fetchCounter(); // جلب قيمة العداد عند التحميل
       
       // إعداد أحداث السحب والإفلات لأسئلة الترتيب
       document.addEventListener('dragover', function(e) {
