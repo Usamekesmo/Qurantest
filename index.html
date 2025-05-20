@@ -404,8 +404,7 @@
     let testStarted = false;
     let corrections = [];
     let draggedItem = null;
-    let correctOrder = [];
-    let userCounter = 0;
+    let correctOrder = []
 
     const surahOrder = [
       "الفاتحة", "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال", "التوبة", "يونس",
@@ -424,28 +423,6 @@
     function shuffleArray(array) {
       return array.sort(() => Math.random() - 0.5);
     }
-
-    // دالة لزيادة العداد
-    function incrementCounter() {
-      userCounter++;
-      document.getElementById('userCounter').textContent = userCounter;
-      
-      // تخزين العداد في غوغل شيت
-      fetch(sheetURLs.counter, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          count: userCounter,
-          timestamp: new Date().toLocaleString()
-        })
-      })
-      .then(response => response.json())
-      .then(data => console.log('Counter updated:', data))
-      .catch(error => console.error('Error updating counter:', error));
-    }
-
     // دالة لجلب قيمة العداد من غوغل شيت
     function fetchCounter() {
       fetch(sheetURLs.counter)
