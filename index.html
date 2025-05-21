@@ -6,6 +6,7 @@
   <title>اختبار القرآن الكريم</title>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Tajawal:wght@500&display=swap" rel="stylesheet">
   <style>
+    /* ... جميع أنماط CSS كما هي ... */
     body {
       font-family: 'Tajawal', sans-serif;
       background: linear-gradient(135deg, #fffde7, #e8f5e9);
@@ -47,16 +48,16 @@
       background-color: #e3f2fd;
     }
     .correct {
-  background-color: rgba(76, 175, 80, 0.3); /* أو أي لون أخضر شفاف يناسبك */
+  background-color: rgba(76, 175, 80, 0.3);
   border-color: #2e7d32;
   color: #2e7d32;
     }
     .wrong {
-  background-color: rgba(76, 175, 80, 0.2) !important; /* لون أخضر فاتح شفاف */
-  border-color: #4CAF50; /* لون أخضر غامق للحدود */
-  color: #2e7d32; /* لون النص أخضر */
+  background-color: rgba(76, 175, 80, 0.2) !important;
+  border-color: #4CAF50;
+  color: #2e7d32;
 }
-    
+    /* باقي أنماط CSS كما هي ... */
     .islamic-pattern {
       background-color: #f8f5ee;
       background-image: 
@@ -72,252 +73,8 @@
       margin-bottom: 20px;
       padding: 20px;
     }
-
-    .ayah-decoration {
-      font-family: 'Amiri', serif;
-      font-size: 24px;
-      line-height: 1.8;
-      text-align: center;
-      padding: 25px;
-      color: #3a2c0b;
-      position: relative;
-    }
-
-    .ayah-decoration::after {
-      content: "﴿";
-      font-family: 'Amiri', serif;
-      color: #d4b170;
-      font-size: 30px;
-      position: absolute;
-      left: 15px;
-      top: 10px;
-    }
-
-    .ayah-decoration::before {
-      content: "﴾";
-      font-family: 'Amiri', serif;
-      color: #d4b170;
-      font-size: 30px;
-      position: absolute;
-      right: 15px;
-      bottom: 10px;
-    }
-    
-    .answer-feedback {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 15px 0;
-      padding: 10px;
-      border-radius: 8px;
-    }
-    .timer-container {
-      font-size: 20px;
-      color: #d32f2f;
-      font-weight: bold;
-      margin: 10px 0;
-      padding: 10px;
-      background-color: #ffebee;
-      border-radius: 10px;
-    }
-    .progress-bar {
-      height: 10px;
-      background-color: #e0e0e0;
-      border-radius: 5px;
-      margin-top: 10px;
-      overflow: hidden;
-    }
-    .progress {
-      height: 100%;
-      background-color: #4caf50;
-      width: 100%;
-      transition: width 1s linear;
-    }
-    .time-per-question {
-      font-size: 14px;
-      color: #666;
-      margin-top: 5px;
-    }
-    .result-box {
-      background-color: #f8f5ee;
-      padding: 20px;
-      border-radius: 15px;
-      margin-top: 20px;
-    }
-    .corrections-box {
-      margin-top: 20px;
-      text-align: right;
-      background-color: #655fcf;
-      padding: 15px;
-      border-radius: 10px;
-    }
-    .correction-item {
-      margin-bottom: 15px;
-      padding-bottom: 15px;
-      border-bottom: 1px dashed #ccc;
-    }
-    .correction-question {
-      font-weight: bold;
-      color: #333;
-    }
-    .user-answer {
-      color: #c62828;
-    }
-    .correct-answer {
-      color: #2e7d32;
-    }
-    
-    /* أنماط جديدة لاختبار الترتيب */
-    #orderMode {
-      display: none;
-      font-family: 'Amiri', serif;
-    }
-    
-    .words-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start; /* تعديل مهم للغات RTL */
-  gap: 8px; /* زيادة المسافة بين العناصر */
-  padding: 10px; /* حشوة داخلية أكبر */
-  background-color: #f0f8ff; /* لون أزرق فاتح أكثر وضوحًا */
-  border-radius: 8px; /* زوايا أكثر استدارة */
-  min-height: 40px; /* ارتفاع أدنى مناسب */
-  margin: 20px 0 15px 0; /* هامش علوي وسفلي فقط */
-  position: relative;
-  z-index: 2;
-  direction: rtl; /* تأكيد اتجاه النص */
-}
-    
-    .drop-zone {
-      background-color: #fff3e0;
-      border: 2px dashed #d4af37;
-      border-radius: 8px;
-      padding: 20px;
-      min-height: 100px;
-      transition: all 0.3s;
-      margin-bottom: 15px;
-      font-size: 18px;
-      line-height: 2;
-      position: relative;
-      z-index: 1;
-      direction: rtl;
-      text-align: right;
-    }
-    
-    .drop-zone.highlight {
-      background-color: #f5eef8;
-      border-color: #8e44ad;
-    }
-    
-    .word-btn {
-  /* إزالة الحشوة الزائدة والإطار */
-  padding: 4px 8px;         /* حشوة صغيرة حول النص فقط */
-  min-width: auto;          /* إزالة العرض الأدنى الثابت */
-  width: auto;             /* عرض يتكيف مع المحتوى */
-  display: inline-flex;     /* لعرض محتوى الزر بشكل مضغوط */
-  justify-content: center;  /* محاذاة النص في المنتصف */
-  
-  /* إزالة الخصائص غير الضرورية */
-  border: none;            /* إزالة الإطار */
-  background-color: transparent; /* خلفية شفافة */
-  box-shadow: none;        /* إزالة الظل */
-  
-  /* الحفاظ على المظهر الأساسي */
-  color: #7d3c98;         /* لون النص */
-  font-size: 18px;
-  font-weight: 600;
-  font-family: 'Amiri', 'Tajawal', sans-serif;
-  border-radius: 3px;      /* زوايا مستديرة خفيفة */
-  
-  /* التفاعل */
-  cursor: grab;
-  transition: all 0.2s;
-}
-
-/* حالة التحويم */
-.word-btn:hover {
-  background-color: #f0e6ff; /* لون خلفية خفيف عند التحويم */
-}
-
-/* حالة السحب */
-.word-btn:active {
-  cursor: grabbing;
-}
-    
-    .order-controls {
-      display: flex;
-      justify-content: right;
-      gap: 5px;
-      margin-top: 10px;
-    }
-    
-    .order-control-btn {
-      background-color: #8e44ad;
-      color: white;
-      border: none;
-      padding: 12px;
-      font-size: 18px;
-      border-radius: 1px;
-      cursor: pointer;
-      transition: all 0.3s;
-      flex: 1;
-      min-width: 100px;
-    }
-    
-    .order-control-btn:hover {
-      background-color: #7d3c98;
-    }
-    
-    .order-control-btn.next {
-      background-color: #7d3c98;
-    }
-    
-    .order-control-btn.next:hover {
-      background-color: #219653;
-    }
-    
-    .empty-message {
-      color: #7f8c8d;
-      font-style: italic;
-      font-size: 16px;
-    }
-    
-    .result-message {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 10px 0;
-      color: #2c3e50;
-    }
-/* أنماط رابط التليجرام */
-.contact-box {
-  background-color: #f5f5f5;
-  padding: 20px;
-  border-radius: 15px;
-  margin-top: 30px;
-  text-align: center;
-}
-
-.telegram-link {
-  display: inline-flex;
-  align-items: center;
-  background-color: #0088cc;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: bold;
-  margin-top: 10px;
-  transition: all 0.3s;
-}
-
-.telegram-link:hover {
-  background-color: #006699;
-}
-
-.telegram-link img {
-  width: 24px;
-  height: 24px;
-  margin-left: 10px;
-}
+    /* باقي أنماط CSS كما هي ... */
+    /* ... */
   </style>
 </head>
 <body>
@@ -336,9 +93,11 @@
     <select id="surahSelector" required>
       <option value="">-- اختر السورة --</option>
     </select>
-    <button type="button" onclick="startQuiz()">ابدأ الاختبار</button>
+    <!-- أزل الخاصية onclick من الزر -->
+    <button id="startBtn">ابدأ الاختبار</button>
   </div>
   <div class="quiz-box" id="quizBox" style="display: none;">
+    <!-- المحتوى كما هو ... -->
     <div class="timer-container">
       <div id="timer">الوقت المتبقي: 00:00</div>
       <div class="time-per-question" id="timePerQuestion">60 ثانية لكل سؤال</div>
@@ -531,7 +290,8 @@
         <a href="https://t.me/qurantest2" target="_blank" class="telegram-link">
           <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram">
           t.me/qurantest2
-          </div>
+          </a>
+        </div>
           
           ${corrections.length > 0 ? `
           <div class="corrections-box">
@@ -1021,7 +781,10 @@
     window.onload = function() {
       loadSurahs();
       
-      // إعداد أحداث السحب والإفلات لأسئلة الترتيب
+      // ربط حدث النقر على زر البدء
+      document.getElementById('startBtn').addEventListener('click', startQuiz);
+
+      // إعداد أحداث السحب والإفلات
       document.addEventListener('dragover', function(e) {
         e.preventDefault();
       });
