@@ -321,7 +321,7 @@
   </style>
 </head>
 <body>
-  <div class="quiz-box" id="startForm">
+    <div class="quiz-box" id="startForm">
     <h2>ابدأ اختبارك</h2>
     <input type="text" id="username" placeholder="اسم المستخدم" required />
     <input type="number" id="questionCount" placeholder="عدد الأسئلة (حد أقصى 25)" min="1" max="25" value="" required />
@@ -336,9 +336,8 @@
     <select id="surahSelector" required>
       <option value="">-- اختر السورة --</option>
     </select>
-    <button onclick="startQuiz()">ابدأ الاختبار</button>
+    <button type="button" onclick="startQuiz()">ابدأ الاختبار</button>
   </div>
-
   <div class="quiz-box" id="quizBox" style="display: none;">
     <div class="timer-container">
       <div id="timer">الوقت المتبقي: 00:00</div>
