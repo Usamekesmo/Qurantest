@@ -316,18 +316,27 @@
       width: 24px;
       height: 24px;
       margin-left: 10px;
-    }
-    .counter-box {
-      background-color: #f5f5f5;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      font-size: 16px;
-    }
-    .counter-value {
-      font-weight: bold;
-      color: #2e7d32;
-      font-size: 18px;
+   <!-- في قسم الـ head داخل الـ style -->
+.welcome-message {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  text-align: center;
+  border: 1px solid #d4b170;
+}
+
+.welcome-title {
+  font-weight: bold;
+  color: #2e7d32;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.welcome-text {
+  line-height: 1.6;
+}
     }
     #whichSurahMode {
       display: none;
@@ -370,7 +379,14 @@
 </div>
 
 <div class="quiz-box" id="startForm">
-
+<!-- في قسم الـ body، استبدال قسم العداد -->
+<div class="welcome-message">
+  <div class="welcome-title">مرحباً بك في اختبار القرآن الكريم</div>
+  <div class="welcome-text">
+    هنا يمكنك اختبار حفظك لآيات القرآن الكريم وتقوية حفظك من خلال أنواع مختلفة من الأسئلة.
+    اختر نوع الاختبار وعدد الأسئلة وابدأ الاختبار الآن!
+  </div>
+</div>
 </div>
 <h2>ابدأ اختبارك</h2>
 <input type="text" id="username" placeholder="اسم المستخدم" required />
